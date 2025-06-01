@@ -13,31 +13,30 @@
   </form>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyuU8wTY3jwz-RUH803ZdOLOEJu10ZJZR7GR6m4noWUwIpMqZOM3-7T-AauopQ91SiHuw/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyuU8wTY3jwz-RUH803ZdOLOEJu10ZJZR7GR6m4noWUwIpMqZOM3-7T-AauopQ91SiHuw/exec';
 
-    document.getElementById('logForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+document.getElementById('logForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
 
-      const formData = new FormData(this);
-      const data = Object.fromEntries(formData.entries());
+  fetch(scriptURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(result => {
+    console.log("✅ Success:", result);
+    alert("Logged to sheet!");
+  })
+  .catch(err => {
+    console.error("❌ Request failed:", err);
+    alert("Error: " + err.message);
+  });
+});
 
-      fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.result === 'success') {
-          alert('Data logged successfully!');
-        } else {
-          alert('Failed to log: ' + result.error);
-        }
-      })
-      .catch(error => {
-        alert('Request failed: ' + error);
-      });
-    });
   </script>
 </body>
 </html>
